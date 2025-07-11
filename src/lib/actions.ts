@@ -7,6 +7,7 @@ import {
   settingsSchema,
 } from "./zodSchema";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 export async function OnboardingAction(_: any, data: unknown) {
   const session = await CheckAuth();
@@ -100,3 +101,44 @@ export async function SettingsActions(data: unknown) {
 
   return { status: "success" };
 }
+
+
+
+export const availabilityActions = async (formData: FormData) => {
+  const session = await CheckAuth();
+
+  const rawData = Object.fromEntries(formData.entries());
+
+  const availabilityData = Object.keys(rawData)
+    .filter((keys) => keys.startsWith("id-"))
+    .map((key) => {
+      const id = key.replace("id-", "");
+      return {
+        id,
+        isActive: rawData[`isActive-${id}`] === "on",
+        fromTime: rawData[`fromTime-${id}`] as string,
+        tillTime: rawData[`tillTime-${id}`] as string,
+      };
+    });
+
+  try {
+    await prisma.$transaction(
+      availabilityData.map((item) =>
+        prisma.availability.update({
+          where: {
+            id: item.id,
+          },
+          data: {
+            isActive: item.isActive,
+            fromTime: item.fromTime,
+            tillTime: item.tillTime,
+          },
+        })
+      )
+    );
+
+    revalidatePath("/dashboard/availability");
+  } catch (error) {
+    console.log(error);
+  }
+};

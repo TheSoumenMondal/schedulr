@@ -1,26 +1,24 @@
-import { Button } from "@/components/ui/button";
+import AvailabilityForm from "@/components/custom/AvailabilityForm";
 import {
   Card,
-  CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { CheckAuth } from "@/hooks/check-auth";
 import { prisma } from "@/lib/prisma";
-import { times } from "@/lib/tims";
 import { notFound } from "next/navigation";
 import React from "react";
+
+const week_order: Record<string, number> = {
+  Sunday: 0,
+  Monday: 1,
+  Tuesday: 2,
+  Wednesday: 3,
+  Thursday: 4,
+  Friday: 5,
+  Saturday: 6,
+};
 
 async function getData(id: string) {
   const data = await prisma.availability.findMany({
@@ -28,10 +26,8 @@ async function getData(id: string) {
       userId: id,
     },
   });
-  if (!data) {
-    return notFound();
-  }
-  return data;
+  if (!data) return notFound();
+  return data.sort((a, b) => week_order[a.day] - week_order[b.day]);
 }
 
 const Page = async () => {
@@ -44,59 +40,10 @@ const Page = async () => {
         <CardTitle className="text-xl font-semibold">Availability</CardTitle>
         <CardDescription className="mt-1 text-sm text-muted-foreground">
           Set your available slots for meetings. This helps others know when
-          you&apos;re free.
+          you're free.
         </CardDescription>
       </CardHeader>
-
-      <CardContent className="flex flex-col gap-4 ">
-        {data?.map((item, index) => (
-          <div
-            key={item.id || index}
-            className="grid grid-cols-1 md:grid-cols-3 items-center gap-4"
-          >
-            {/* Day + Toggle */}
-            <div className="flex items-center gap-3">
-              <Switch defaultChecked={item.isActive} />
-              <span className="text-sm font-medium">{item.day}</span>
-            </div>
-
-            {/* From Time */}
-            <Select defaultValue={item.fromTime}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="From Time" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {times.map((time) => (
-                    <SelectItem key={time.id} value={time.time}>
-                      {time.time}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-
-            {/* Till Time */}
-            <Select defaultValue={item.tillTime}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Till Time" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {times.map((time) => (
-                    <SelectItem key={time.id} value={time.time}>
-                      {time.time}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-        ))}
-      </CardContent>
-      <CardFooter>
-        <Button className="w-full">Save Changes</Button>
-      </CardFooter>
+      <AvailabilityForm data={data} />
     </Card>
   );
 };

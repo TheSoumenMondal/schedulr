@@ -9,6 +9,7 @@ import {
 } from "./zodSchema";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import z from "zod";
 
 export async function OnboardingAction(_: any, data: unknown) {
   const session = await CheckAuth();
@@ -142,15 +143,18 @@ export const availabilityActions = async (formData: FormData) => {
   }
 };
 
-export async function CreateEventTypeAction(formData: FormData) {
+export async function CreateEventTypeAction(
+  formData: z.infer<typeof eventTypeSchema>
+) {
   const session = await CheckAuth();
 
-  const values = Object.fromEntries(formData.entries());
-  const submission = eventTypeSchema.safeParse(values);
+  const submission = eventTypeSchema.safeParse(formData);
 
   if (!submission.success) {
     return { error: submission.error.flatten().fieldErrors };
   }
+
+  console.log(submission);
 
   const { title, url, description, duration, videoCallSoftware } =
     submission.data;
@@ -160,7 +164,7 @@ export async function CreateEventTypeAction(formData: FormData) {
       title,
       url,
       description,
-      duration,
+      duration: Number(duration),
       VideoCallingApp: videoCallSoftware,
       userId: session.user?.id,
     },

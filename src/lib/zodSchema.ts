@@ -15,6 +15,7 @@ export const onboardingSchema = z.object({
     }),
 });
 
+
 export function onboardingSchemaUsernameValidation(option?: {
   isUsernameUnique: () => Promise<boolean>;
 }) {
@@ -48,6 +49,8 @@ export function onboardingSchemaUsernameValidation(option?: {
       .max(100, "Full name is too long"),
   });
 }
+
+
 
 export const settingsSchema = z.object({
   fullName: z.string().min(3).max(100),

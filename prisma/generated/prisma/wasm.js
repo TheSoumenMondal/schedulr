@@ -174,6 +174,18 @@ exports.Prisma.AvailabilityScalarFieldEnum = {
   userId: 'userId'
 };
 
+exports.Prisma.EventScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  duration: 'duration',
+  url: 'url',
+  description: 'description',
+  active: 'active',
+  VideoCallingApp: 'VideoCallingApp',
+  createdAt: 'createdAt',
+  userId: 'userId'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -203,7 +215,8 @@ exports.Prisma.ModelName = {
   Account: 'Account',
   Session: 'Session',
   VerificationToken: 'VerificationToken',
-  Availability: 'Availability'
+  Availability: 'Availability',
+  Event: 'Event'
 };
 
 /**

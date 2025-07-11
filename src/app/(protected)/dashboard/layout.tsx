@@ -34,7 +34,7 @@ const Layout = async ({ children }: Props) => {
     <div className="w-full min-h-screen flex justify-center">
       <div className="relative w-full max-w-4xl px-4 sm:px-4 lg:px-8 flex flex-col">
         {/* Sticky Navbar */}
-        <div className="sticky top-0 z-50 bg-background py-5 flex items-center justify-between border-b select-none">
+        <div className="sticky top-0 z-50 bg-background py-5 flex items-center justify-between select-none">
           <p className="text-sm font-bold">schedulr</p>
           <div className="flex gap-3 items-center">
             <ToggleTheme className="cursor-pointer" />

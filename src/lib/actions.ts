@@ -3,6 +3,7 @@
 import { CheckAuth } from "@/hooks/check-auth";
 import { prisma } from "./prisma";
 import {
+  eventTypeSchema,
   onboardingSchemaUsernameValidation,
   settingsSchema,
 } from "./zodSchema";
@@ -102,8 +103,6 @@ export async function SettingsActions(data: unknown) {
   return { status: "success" };
 }
 
-
-
 export const availabilityActions = async (formData: FormData) => {
   const session = await CheckAuth();
 
@@ -142,3 +141,30 @@ export const availabilityActions = async (formData: FormData) => {
     console.log(error);
   }
 };
+
+export async function CreateEventTypeAction(formData: FormData) {
+  const session = await CheckAuth();
+
+  const values = Object.fromEntries(formData.entries());
+  const submission = eventTypeSchema.safeParse(values);
+
+  if (!submission.success) {
+    return { error: submission.error.flatten().fieldErrors };
+  }
+
+  const { title, url, description, duration, videoCallSoftware } =
+    submission.data;
+
+  await prisma.event.create({
+    data: {
+      title,
+      url,
+      description,
+      duration,
+      VideoCallingApp: videoCallSoftware,
+      userId: session.user?.id,
+    },
+  });
+
+  return redirect("/dashboard");
+}

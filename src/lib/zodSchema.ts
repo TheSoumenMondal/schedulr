@@ -1,4 +1,3 @@
-// lib/zodSchema.ts
 import { z } from "zod";
 
 export const onboardingSchema = z.object({
@@ -28,7 +27,7 @@ export function onboardingSchemaUsernameValidation(option?: {
         message: "Username can only contain letters and numbers",
       })
       .refine(
-        async (username) => {
+        async () => {
           if (typeof option?.isUsernameUnique === "function") {
             try {
               const isUnique = await option.isUsernameUnique();

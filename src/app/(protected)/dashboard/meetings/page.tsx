@@ -82,7 +82,7 @@ const page = async () => {
       </div>
 
       <div className="grid gap-4">
-        {meetings.map((item, index) => {
+        {meetings.map((item) => {
           const start = fromUnixTime(item.when.startTime);
           const end = fromUnixTime(item.when.endTime);
           const isUpcoming = start > new Date();

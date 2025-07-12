@@ -40,7 +40,7 @@ const Page = async () => {
         <CardTitle className="text-xl font-semibold">Availability</CardTitle>
         <CardDescription className="mt-1 text-sm text-muted-foreground">
           Set your available slots for meetings. This helps others know when
-          you're free.
+          you&apos;re free.
         </CardDescription>
       </CardHeader>
       <AvailabilityForm data={data} />

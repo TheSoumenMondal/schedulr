@@ -26,9 +26,9 @@ async function fetchData(eventId: string) {
 export default async function EditRoute({
   params,
 }: {
-  params: { id: Promise<string> };
+  params: Promise<{ id: string }>;
 }) {
-  const eventId = await params.id;
+  const { id: eventId } = await params;
   const data = await fetchData(eventId);
   return (
     <EditEventForm

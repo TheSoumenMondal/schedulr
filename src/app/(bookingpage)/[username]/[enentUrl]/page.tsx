@@ -59,7 +59,6 @@ export default async function BookingFormRoute({
   const resolvedParams = await params;
   const resolvedSearchParams = await searchParams;
 
-
   const selectedDate = resolvedSearchParams?.date
     ? new Date(resolvedSearchParams.date)
     : new Date();
@@ -67,10 +66,7 @@ export default async function BookingFormRoute({
   const { username, eventUrl } = resolvedParams;
 
   const data = await fetchData(eventUrl, username);
-
   const showForm = !!resolvedSearchParams?.date && !!resolvedSearchParams?.time;
-
-  console.log(data);
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center">
@@ -90,7 +86,6 @@ export default async function BookingFormRoute({
               <p className="text-sm text-muted-foreground">
                 {data.description}
               </p>
-
               <div className="mt-5 flex flex-col gap-y-3">
                 <p className="flex items-center">
                   <IconCalendar className="w-4 h-4 text-primary mr-2" />
@@ -116,15 +111,12 @@ export default async function BookingFormRoute({
                 </p>
               </div>
             </div>
-
-            {/* Separator */}
             <div className="col-start-2 flex justify-center h-full">
               <Separator
                 orientation="vertical"
                 className="h-full w-px bg-muted-foreground/30"
               />
             </div>
-
             <form
               action={createMeetingAction}
               className="col-start-3 flex flex-col gap-y-4"
@@ -140,21 +132,17 @@ export default async function BookingFormRoute({
                 name="eventDate"
                 value={resolvedSearchParams.date}
               />
-
               <input type="hidden" name="meetingLength" value={data.duration} />
-
               <input
                 type="hidden"
                 name="provider"
                 value={data.VideoCallingApp}
               />
-
               <input
                 type="hidden"
                 name="username"
                 value={resolvedParams.username}
               />
-
               <input type="hidden" name="eventTypeId" value={data.id} />
 
               <div className="flex flex-col gap-y-2">
@@ -169,8 +157,6 @@ export default async function BookingFormRoute({
                 Book Meeting{" "}
               </Button>
             </form>
-
-            {/* Right: Time Select Component  */}
           </CardContent>
         </Card>
       ) : (
@@ -189,7 +175,6 @@ export default async function BookingFormRoute({
               <p className="text-sm text-muted-foreground">
                 {data.description}
               </p>
-
               <div className="mt-5 flex flex-col gap-y-3">
                 <p className="flex items-center">
                   <IconCalendar className="w-4 h-4 text-primary mr-2" />
@@ -215,28 +200,21 @@ export default async function BookingFormRoute({
                 </p>
               </div>
             </div>
-
-            {/* Separator */}
             <div className="col-start-2 flex justify-center h-full">
               <Separator
                 orientation="vertical"
                 className="h-full w-px bg-muted-foreground/30"
               />
             </div>
-
-            {/* Right: Calendar */}
             <div className="col-start-3">
               <RenderCalendar availability={data.User?.availability as any} />
             </div>
-
-            {/* Separator */}
             <div className="col-start-4 flex justify-center h-full">
               <Separator
                 orientation="vertical"
                 className="h-full w-px bg-muted-foreground/30"
               />
             </div>
-
             <div className="col-start-5">
               <TimeTable
                 duration={data.duration}
@@ -244,8 +222,6 @@ export default async function BookingFormRoute({
                 username={username}
               />
             </div>
-
-            {/* Right: Time Select Component  */}
           </CardContent>
         </Card>
       )}

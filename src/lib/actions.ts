@@ -11,7 +11,6 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import z from "zod";
 import { nylas } from "./nylas";
-import { CheckCheck } from "lucide-react";
 
 export async function OnboardingAction(_: any, data: unknown) {
   const session = await CheckAuth();
@@ -243,8 +242,6 @@ export async function createMeetingAction(formData: FormData) {
   return redirect("/success");
 }
 
-
-
 export async function cancelMeetingAction(formData: FormData) {
   const session = await CheckAuth();
   const userData = await prisma.user.findUnique({
@@ -268,19 +265,67 @@ export async function cancelMeetingAction(formData: FormData) {
   revalidatePath("/dashboard/meetings");
 }
 
-
-export async function EditEventTypeAction(data: z.infer<typeof eventTypeSchema>, id: string) {
+export async function EditEventTypeAction(
+  data: z.infer<typeof eventTypeSchema>,
+  id: string
+) {
   const session = await CheckAuth();
   const submission = eventTypeSchema.safeParse(data);
   if (!submission.success) {
     return { error: submission.error.flatten().fieldErrors };
   }
 
-  const { title, url, description, duration, videoCallSoftware } = submission.data;
+  const { title, url, description, duration, videoCallSoftware } =
+    submission.data;
   await prisma.event.update({
     where: { id },
-    data: { title, url, description, duration: Number(duration), VideoCallingApp: videoCallSoftware, userId: session.user?.id }
+    data: {
+      title,
+      url,
+      description,
+      duration: Number(duration),
+      VideoCallingApp: videoCallSoftware,
+      userId: session.user?.id,
+    },
   });
 
   return redirect("/dashboard");
+}
+
+export async function ToggleEventActive(
+  prevState: any,
+  {
+    eventId,
+    isActive,
+  }: {
+    eventId: string;
+    isActive: boolean;
+  }
+) {
+  const session = await CheckAuth();
+  if (!session?.user?.id) {
+    return { status: "error", message: "Unauthorized" };
+  }
+
+  try {
+    await prisma.event.update({
+      where: { id: eventId, userId: session.user.id },
+      data: { active: isActive },
+    });
+    revalidatePath("/dashboard");
+    return { status: "success", message: "Event state updated successfully" };
+  } catch (error) {
+    return { status: "error", message: "Failed to update event state" };
+  }
+}
+
+export async function DeleteEventAction(formData: FormData) {
+  const session = await CheckAuth();
+  const data = await prisma.event.delete({
+    where: {
+      id: formData.get("id") as string,
+      userId: session.user?.id,
+    },
+  });
+  return redirect("/dashboard")
 }

@@ -1,5 +1,6 @@
 import { CopyLink } from "@/components/custom/copy";
 import EmptyState from "@/components/custom/empty-state";
+import { MenuActiveSwitch } from "@/components/custom/event-active-switcher";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,11 +11,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Switch } from "@/components/ui/switch";
 import { CheckAuth } from "@/hooks/check-auth";
 import { prisma } from "@/lib/prisma";
 import {
-  IconCopy,
   IconExternalLink,
   IconPencil,
   IconSettings2,
@@ -115,9 +114,11 @@ export default async function Home() {
                         </DropdownMenuItem>
                       </DropdownMenuGroup>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem>
-                        <IconTrash />
-                        Delete
+                      <DropdownMenuItem asChild>
+                        <Link href={`/dashboard/event/${event.id}/delete`}>
+                          <IconTrash />
+                          Delete
+                        </Link>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -138,8 +139,15 @@ export default async function Home() {
                 </Link>
 
                 <div className="bg-muted px-5 py-3 items-center flex justify-between">
-                  <Switch />
-                  <Button>Edit</Button>
+                  <MenuActiveSwitch
+                    initialChecked={event.active}
+                    eventId={event.id}
+                  />
+                  <Link href={`/dashboard/event/${event.id}`}>
+                    <Button size={"sm"} className="rounded-lg">
+                      Edit
+                    </Button>
+                  </Link>
                 </div>
               </div>
             ))}

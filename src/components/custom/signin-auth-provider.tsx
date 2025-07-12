@@ -31,7 +31,12 @@ export function SignInWith({
   };
 
   return (
-    <Button disabled={submitting} className="w-full" onClick={handleSignIn}>
+    <Button
+      disabled={submitting}
+      className="w-full"
+      variant={"secondary"}
+      onClick={handleSignIn}
+    >
       {submitting ? (
         <>
           <IconLoader3 className="w-4 h-4 animate-spin" />

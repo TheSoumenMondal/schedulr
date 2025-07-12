@@ -1,8 +1,10 @@
 "use client";
 
+import HomePage from "@/components/custom/home";
 import Navbar from "@/components/custom/navbar";
 import { IconLoader3 } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 
 export default function Home() {
@@ -23,6 +25,7 @@ export default function Home() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-4 lg:px-8">
       <Navbar />
+      <HomePage />
     </div>
   );
 }

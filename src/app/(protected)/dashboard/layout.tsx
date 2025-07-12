@@ -3,6 +3,7 @@ import ToggleTheme from "@/components/custom/theme-toggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CheckAuth } from "@/hooks/check-auth";
 import { prisma } from "@/lib/prisma";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import React from "react";
 
@@ -35,17 +36,19 @@ const Layout = async ({ children }: Props) => {
       <div className="relative w-full max-w-4xl px-4 sm:px-4 lg:px-8 flex flex-col">
         {/* Sticky Navbar */}
         <div className="sticky top-0 z-50 bg-background py-5 flex items-center justify-between select-none">
-          <p className="text-sm font-bold">schedulr</p>
+          <Link href={"/dashboard"} className="text-sm font-bold">schedulr</Link>
           <div className="flex gap-3 items-center">
             <ToggleTheme className="cursor-pointer" />
             <MenuSheet />
-            <Avatar>
-              <AvatarImage
-                src={session?.user?.image || "placeholder.png"}
-                alt={(session?.user?.name as string) || "logo"}
-              />
-              <AvatarFallback>{session?.user?.name}</AvatarFallback>
-            </Avatar>
+            <Link href={"/dashboard/settings"}>
+              <Avatar>
+                <AvatarImage
+                  src={session?.user?.image || "placeholder.png"}
+                  alt={(session?.user?.name as string) || "logo"}
+                />
+                <AvatarFallback>{session?.user?.name}</AvatarFallback>
+              </Avatar>
+            </Link>
           </div>
         </div>
 

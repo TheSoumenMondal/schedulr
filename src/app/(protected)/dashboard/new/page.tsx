@@ -83,19 +83,20 @@ const NewPage: React.FC = () => {
             {/* URL */}
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="url">URL</Label>
-              <div className="flex w-full">
-                <span className="inline-flex items-center rounded-l-md border border-r-0 border-input bg-muted px-3 text-sm text-muted-foreground">
+              <div className="flex w-full flex-nowrap">
+                <span className="inline-flex items-center rounded-l-md border border-r-0 border-input bg-muted px-3 text-xs text-muted-foreground whitespace-nowrap">
                   {process.env.NEXT_PUBLIC_BASE_URL}
                 </span>
                 <Input
                   id="url"
                   placeholder="example-url-30minute"
-                  className="rounded-l-none"
+                  className="rounded-l-none w-full"
                   {...register("url", {
                     required: "URL slug is required",
                   })}
                 />
               </div>
+
               {errors.url && (
                 <p className="text-sm text-red-500">{errors.url.message}</p>
               )}

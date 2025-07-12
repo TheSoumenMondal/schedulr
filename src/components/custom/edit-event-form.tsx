@@ -2,66 +2,74 @@
 
 import React from "react";
 import { useForm, Controller } from "react-hook-form";
-import z from "zod";
-
+import { EditEventTypeAction } from "@/lib/actions";
+import { eventTypeSchema } from "@/lib/zodSchema";
+import { IconLoader3, IconCheck } from "@tabler/icons-react";
 import ButtonGroups, {
   VideoCallProviders,
 } from "@/components/custom/button-group";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
+  CardDescription,
+  CardFooter,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
+  SelectContent,
+  SelectGroup,
+  SelectLabel,
+  SelectItem,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-
-import { CreateEventTypeAction } from "@/lib/actions";
-import { eventTypeSchema } from "@/lib/zodSchema";
-import { IconLoader3, IconPlus } from "@tabler/icons-react";
+import { Button } from "@/components/ui/button";
+import z from "zod";
 
 type FormData = z.infer<typeof eventTypeSchema>;
 
-const NewPage: React.FC = () => {
+interface EditEventFormProps {
+  id: string;
+  title: string;
+  description: string;
+  url: string;
+  duration: number;
+  videoCallSoftware: VideoCallProviders;
+}
+
+export function EditEventForm({
+  id,
+  title,
+  description,
+  url,
+  duration,
+  videoCallSoftware,
+}: EditEventFormProps) {
   const {
     control,
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
-    defaultValues: {
-      title: "",
-      url: "",
-      description: "",
-      duration: 30,
-      videoCallSoftware: "Google Meet",
-    },
+    defaultValues: { title, url, description, duration, videoCallSoftware },
   });
 
   const onSubmit = async (data: FormData) => {
-    await CreateEventTypeAction(data);
+    await EditEventTypeAction(data, id);
   };
 
   return (
     <div className="flex w-full items-center justify-center p-4">
       <Card className="w-full max-w-xl shadow-md">
         <CardHeader>
-          <CardTitle className="text-xl">Add New Appointment</CardTitle>
+          <CardTitle className="text-xl">Edit Your Appointment</CardTitle>
           <CardDescription>
-            Create a new appointment type that allows people to book you.
+            Update your appointment details below.
           </CardDescription>
         </CardHeader>
 
@@ -91,9 +99,7 @@ const NewPage: React.FC = () => {
                   id="url"
                   placeholder="example-url-30minute"
                   className="rounded-l-none"
-                  {...register("url", {
-                    required: "URL slug is required",
-                  })}
+                  {...register("url", { required: "URL slug is required" })}
                 />
               </div>
               {errors.url && (
@@ -115,13 +121,13 @@ const NewPage: React.FC = () => {
             <div className="flex flex-col gap-1.5 w-full">
               <Label>Duration of Meeting</Label>
               <Controller
-                control={control}
                 name="duration"
+                control={control}
                 rules={{ required: "Please select a duration" }}
                 render={({ field }) => (
                   <Select
                     onValueChange={(val) => field.onChange(Number(val))}
-                    value={field.value?.toString()}
+                    value={String(field.value)}
                   >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select Duration" />
@@ -150,9 +156,8 @@ const NewPage: React.FC = () => {
             <div className="flex flex-col gap-1.5 w-full">
               <Label>Video Call Software</Label>
               <Controller
-                control={control}
                 name="videoCallSoftware"
-                defaultValue="Google Meet"
+                control={control}
                 rules={{ required: "Please pick a provider" }}
                 render={({ field }) => (
                   <ButtonGroups
@@ -188,11 +193,11 @@ const NewPage: React.FC = () => {
             >
               {isSubmitting ? (
                 <>
-                  Creating <IconLoader3 className="animate-spin w-4 h-4" />{" "}
+                  Updating <IconLoader3 className="animate-spin w-4 h-4" />
                 </>
               ) : (
                 <>
-                  Create Event <IconPlus className="w-4 h-4 rounded-full  " />{" "}
+                  Update Event <IconCheck className="w-4 h-4 rounded-full" />
                 </>
               )}
             </Button>
@@ -201,6 +206,4 @@ const NewPage: React.FC = () => {
       </Card>
     </div>
   );
-};
-
-export default NewPage;
+}

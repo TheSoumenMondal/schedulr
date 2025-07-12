@@ -1,3 +1,4 @@
+import { CopyLink } from "@/components/custom/copy";
 import EmptyState from "@/components/custom/empty-state";
 import { Button } from "@/components/ui/button";
 import {
@@ -95,18 +96,22 @@ export default async function Home() {
                       <DropdownMenuSeparator />
                       <DropdownMenuGroup>
                         <DropdownMenuItem asChild>
-                          <Link target="blank" href={`/${data.username}/${event.url}`}>
+                          <Link
+                            target="_blank"
+                            href={`/${data.username}/${event.url}`}
+                          >
                             <IconExternalLink />
                             Preview
                           </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <IconCopy />
-                          Copy
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <IconPencil />
-                          Edit
+                        <CopyLink
+                          url={`${process.env.NEXT_PUBLIC_APP_URL}/${data.username}/${event.url}`}
+                        />
+                        <DropdownMenuItem asChild>
+                          <Link href={`/dashboard/event/${event.id}`}>
+                            <IconPencil />
+                            Edit
+                          </Link>
                         </DropdownMenuItem>
                       </DropdownMenuGroup>
                       <DropdownMenuSeparator />

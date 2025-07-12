@@ -10,6 +10,8 @@ import {
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import z from "zod";
+import { nylas } from "./nylas";
+import { CheckCheck } from "lucide-react";
 
 export async function OnboardingAction(_: any, data: unknown) {
   const session = await CheckAuth();
@@ -159,7 +161,7 @@ export async function CreateEventTypeAction(
   const { title, url, description, duration, videoCallSoftware } =
     submission.data;
 
-  await prisma.event.create({
+  const data = await prisma.event.create({
     data: {
       title,
       url,
@@ -168,6 +170,116 @@ export async function CreateEventTypeAction(
       VideoCallingApp: videoCallSoftware,
       userId: session.user?.id,
     },
+  });
+
+  console.log(data);
+
+  return redirect("/dashboard");
+}
+
+export async function createMeetingAction(formData: FormData) {
+  const getUserInfo = await prisma.user.findUnique({
+    where: {
+      username: formData.get("username") as string,
+    },
+    select: {
+      grantEmail: true,
+      grantId: true,
+    },
+  });
+
+  if (!getUserInfo) {
+    throw new Error("User not found");
+  }
+
+  const eventTypeData = await prisma.event.findUnique({
+    where: {
+      id: formData.get("eventTypeId") as string,
+    },
+    select: {
+      title: true,
+      description: true,
+    },
+  });
+
+  const fromTime = formData.get("fromTime") as string;
+  const eventDate = formData.get("eventDate") as string;
+  const meetingLength = Number(formData.get("meetingLength"));
+  const provider = formData.get("provider");
+
+  const startDateTime = new Date(`${eventDate}T${fromTime}:00`);
+
+  const endDateTime = new Date(startDateTime.getTime() + meetingLength * 60000);
+
+  const data = await nylas.events.create({
+    identifier: getUserInfo.grantId as string,
+    requestBody: {
+      title: eventTypeData?.title,
+      description: eventTypeData?.description,
+      when: {
+        startTime: Math.floor(startDateTime.getTime() / 1000),
+        endTime: Math.floor(endDateTime.getTime() / 1000),
+      },
+      conferencing: {
+        autocreate: {},
+        provider: provider as any,
+      },
+      participants: [
+        {
+          name: formData.get("name") as string,
+          email: formData.get("email") as string,
+          status: "yes",
+        },
+      ],
+    },
+    queryParams: {
+      calendarId: getUserInfo.grantEmail as string,
+      notifyParticipants: true,
+    },
+  });
+
+  console.log(data);
+
+  return redirect("/success");
+}
+
+
+
+export async function cancelMeetingAction(formData: FormData) {
+  const session = await CheckAuth();
+  const userData = await prisma.user.findUnique({
+    where: { id: session.user?.id },
+    select: {
+      grantId: true,
+      grantEmail: true,
+    },
+  });
+  if (!userData) {
+    throw new Error("User not found");
+  }
+  const data = nylas.events.destroy({
+    eventId: formData.get("eventId") as string,
+    identifier: userData.grantId as string,
+    queryParams: {
+      calendarId: userData.grantEmail as string,
+    },
+  });
+
+  revalidatePath("/dashboard/meetings");
+}
+
+
+export async function EditEventTypeAction(data: z.infer<typeof eventTypeSchema>, id: string) {
+  const session = await CheckAuth();
+  const submission = eventTypeSchema.safeParse(data);
+  if (!submission.success) {
+    return { error: submission.error.flatten().fieldErrors };
+  }
+
+  const { title, url, description, duration, videoCallSoftware } = submission.data;
+  await prisma.event.update({
+    where: { id },
+    data: { title, url, description, duration: Number(duration), VideoCallingApp: videoCallSoftware, userId: session.user?.id }
   });
 
   return redirect("/dashboard");

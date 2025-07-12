@@ -19,7 +19,7 @@ export function Calendar(
     locale,
   });
 
-  let { calendarProps, prevButtonProps, nextButtonProps, title } = useCalendar(
+  let { calendarProps, prevButtonProps, nextButtonProps } = useCalendar(
     props,
     state
   );
